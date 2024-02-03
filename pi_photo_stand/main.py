@@ -130,11 +130,11 @@ class PiPhotoStand:
     def is_raspberry_pi_zero_2(self):
         try:
             # Check if the platform is 'armv6l' and if the model is 'Zero2W'
-            print(sys.platform)
-            print(platform.machine())
-            platform_info = sys.platform
-            if platform_info == 'dd':
+            print(f"Current platform '{platform.machine()}'.")
+            if platform.machine() == 'armv7l':
                 return True
+            else:
+                return False
             #return platform.machine() == 'armv6l' and platform.system() == 'Linux' and 'Zero2W' in platform.uname().release
         except Exception:
             return False
