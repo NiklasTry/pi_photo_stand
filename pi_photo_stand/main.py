@@ -9,6 +9,7 @@ import threading
 import time
 import platform
 import pyautogui
+import sys
 
 def simple_resize_image(img, target_width=800, max_height=480):
         img_resized = cv2.resize(img, (target_width, max_height))
@@ -58,7 +59,7 @@ class PiPhotoStand:
             self.load_history_data()
             current_time = datetime.now().second
             print(f"Current time: {current_time}")
-            
+
             if current_time >= 55:
                 self.past_images.append(self.current_image)
                 self.current_image = None
@@ -129,7 +130,12 @@ class PiPhotoStand:
     def is_raspberry_pi_zero_2(self):
         try:
             # Check if the platform is 'armv6l' and if the model is 'Zero2W'
-            return platform.machine() == 'armv6l' and platform.system() == 'Linux' and 'Zero2W' in platform.uname().release
+            print(sys.platform)
+            print(platform.machine())
+            platform_info = sys.platform
+            if platform_info == 'dd':
+                return True
+            #return platform.machine() == 'armv6l' and platform.system() == 'Linux' and 'Zero2W' in platform.uname().release
         except Exception:
             return False
     
