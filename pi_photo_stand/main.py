@@ -28,7 +28,7 @@ class PiPhotoStand:
         self.exit_program = False
         self.day_change = False
         self.server_folder = server_folder
-        images_folder = f"{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/MY_IMAGES"
+        images_folder = f"{os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))}/MY_IMAGES"
         self.images_folder = images_folder
         self.init_folders()
 
@@ -58,6 +58,7 @@ class PiPhotoStand:
             self.load_history_data()
             current_time = datetime.now().second
             print(f"Current time: {current_time}")
+            
             if current_time >= 55:
                 self.past_images.append(self.current_image)
                 self.current_image = None
