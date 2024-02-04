@@ -16,7 +16,6 @@ def simple_resize_image(img, target_width=800, max_height=480):
         return img_resized
 
 class PiPhotoStand:
-    #FULLSCREEN = False
     
     WINDOW_HEIGHT = 480
     WINDOW_WIDTH = 800
@@ -171,11 +170,11 @@ class PiPhotoStand:
         try:
             with open(f"{self.images_folder}/history_data.json", "r") as f:
                 self.history_data = json.load(f)
-                self.past_images = self.history_data["past_images"]
-                self.current_image = self.history_data["today"]["current_image"]
-                self.last_year = self.history_data["today"]["year"]
-                self.last_month = self.history_data["today"]["month"]
-                self.last_date = self.history_data["today"]["date"]
+                self.past_images = self.history_data.get("past_images", [])
+                self.current_image = self.history_data.get("today", {}).get("current_image", None)
+                self.last_year = self.history_data.get("today", {}).get("year", 0)
+                self.last_month = self.history_data.get("today", {}).get("month", 0)
+                self.last_date = self.history_data.get("today", {}).get("date", 0)
                 print(f"History data loaded!")
 
         except FileNotFoundError:
@@ -183,11 +182,17 @@ class PiPhotoStand:
             self.history_data = {}
             self.past_images = []
             self.current_image = None
+            self.last_year = 0
+            self.last_month = 0
+            self.last_date = 0
         except json.JSONDecodeError:
             print("History data file is empty.")
             self.history_data = {}
             self.past_images = []
             self.current_image = None
+            self.last_year = 0
+            self.last_month = 0
+            self.last_date = 0
 
     def clear_history_data(self):
         self.history_data = {}
