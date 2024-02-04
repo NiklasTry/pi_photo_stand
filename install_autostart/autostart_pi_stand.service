@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/home/niklas/Desktop/pi_photo_stand_project/pi_photo_stand/autostart_pi_stand.sh
+ExecStart=/home/admin/Programs/Pi_Photo_Stand/pi_photo_stand/install_autostart/autostart_pi_stand.sh
 
 [Install]
 WantedBy=default.target

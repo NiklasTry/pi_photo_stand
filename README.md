@@ -56,6 +56,10 @@
     ```
     /etc/systemd/system/
     ```
+    Go into the git directory
+    ```
+    sudo cp autostart_pi_stand.service /etc/systemd/system/
+    ```
 2. **Reload systemd:**
    After modifying the Bash script, reload the systemd manager to apply the changes:
 
@@ -70,19 +74,19 @@
 
 5. **Start the service**
     ```
-    sudo systemctl start myservice
+    sudo systemctl start autostart_pi_stand
     ```
 6. **Verify the status**
     ```
-    sudo systemctl status myservice
+    sudo systemctl status autostart_pi_stand
     ```
 7. **Stop the service**
     ```
-    sudo systemctl stop myservice
+    sudo systemctl stop autostart_pi_stand
     ```
 8. **Disable the Service**
     ```
-    sudo systemctl disable myservice
+    sudo systemctl disable autostart_pi_stand
     ```    
 ## Usage
 
