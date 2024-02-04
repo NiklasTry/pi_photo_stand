@@ -25,6 +25,7 @@ class PiPhotoStand:
     pyautogui.PAUSE = 1
     pyautogui.FAILSAFE = False
     MODE = "CALENDAR"  # "CALENDAR" or "RANDOM"
+    #MODE = "RANDOM"  # "CALENDAR" or "RANDOM"
     DEBUG = False
 
     def __init__(self, server_folder):
@@ -205,6 +206,7 @@ class PiPhotoStand:
         self.get_current_timestamp()
         # Create a black background for the calendar overlay
         overlay = np.zeros_like(img)
+        overlay_box = np.zeros_like(img)
 
         # Define the font and text properties
         font = cv2.FONT_HERSHEY_SIMPLEX
@@ -225,12 +227,18 @@ class PiPhotoStand:
 
         date_spacing = int((self.WINDOW_WIDTH - 40 - max_date_width) / 36)
 
-        # Display dates for the current month
+        box_color = (70, 70, 70)
 
         dates_in_row = 0
+        # Draw a grey box behind the date
+        box_start = (10, img.shape[0]-75)
+        box_end = (img.shape[1]-10, img.shape[0]-10)
+        cv2.rectangle(overlay_box, box_start, box_end, box_color, thickness=cv2.FILLED)
+        
         for day in range(1, self.days_in_month + 1):
             date_text = str(day)
             date_width, date_height = cv2.getTextSize(date_text, font, font_scale, font_thickness)[0]
+
             # Check if the maximum number of dates per row is reached
             if dates_in_row == max_dates_per_row:
                 date_x = 20  # Reset x position for the new row
@@ -250,9 +258,10 @@ class PiPhotoStand:
             dates_in_row += 1
 
         # Blend the overlay with the original image
-        alpha = 0.6
-        cv2.addWeighted(overlay, alpha, img, 1 - alpha, 0, img)
-
+        alpha = 0
+        #cv2.addWeighted(overlay, alpha, img, 1 - alpha, 0, img)
+        cv2.addWeighted(overlay_box, 0.8, img, 1 , 0, img)
+        cv2.addWeighted(overlay, 0.9, img, 1 - alpha, 0, img)
         return img
 
     def resize_image_for_display(self, img, size=(WINDOW_WIDTH,WINDOW_HEIGHT)):
@@ -312,26 +321,9 @@ class PiPhotoStand:
 
             print("No more available images.")
             self.clear_history_data()
+            available_images = [img for img in image_files if img not in self.past_images]
         cv2.destroyAllWindows()
         self.mouse_thread.join()
-
-    def adjust_brightness(self, image, factor):
-        """
-        Adjust the brightness of an image.
-
-        Parameters:
-        - image: Input image (OpenCV format)
-        - factor: Brightness adjustment factor (1.0 for no change, values less than 1.0 for darkening, values greater than 1.0 for brightening)
-
-        Returns:
-        - Brightness-adjusted image
-        """
-        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-        v = hsv[:, :, 2]
-        v = np.clip(factor * v, 0, 255)
-        hsv[:, :, 2] = v
-        adjusted_image = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
-        return adjusted_image
 
     def display_images_calender(self):
         self.time_thread.start()
@@ -365,7 +357,6 @@ class PiPhotoStand:
                 image_path = os.path.join(self.images_folder, selected_image)
                 img = cv2.imread(image_path)
                 img = self.resize_image_for_display(img)
-                img = self.adjust_brightness(img, 1.2)
                 img = self.overlay_calendar(img)
             
                 cv2.imshow("my_window", img)
@@ -384,5 +375,5 @@ if __name__ == "__main__":
     current_user = os.getenv('USER')
     server_folder = f'/home/{current_user}/TE_NAS_photo_share'
     my_photo_stand = PiPhotoStand(server_folder=server_folder)
-    my_photo_stand.time_thread.join()
+
 
