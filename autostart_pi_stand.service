@@ -1,0 +1,10 @@
+[Unit]
+Description=Auto Start Phone Stand
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/niklas/Desktop/pi_photo_stand_project/pi_photo_stand/autostart_pi_stand.sh
+
+[Install]
+WantedBy=default.target

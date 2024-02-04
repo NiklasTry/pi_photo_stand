@@ -24,6 +24,9 @@ class PiPhotoStand:
     IMAGE_CALENDER_CYCLE_TIME = 5  # seconds
     EXIT_PIXEL_RANGE = 100
     pyautogui.PAUSE = 1
+    pyautogui.FAILSAFE = False
+    MODE = "CALENDAR"  # "CALENDAR" or "RANDOM"
+    DEBUG = False
 
     def __init__(self, server_folder):
         self.exit_program = False
@@ -48,8 +51,11 @@ class PiPhotoStand:
             self.FULLSCREEN = True
         else:
             self.FULLSCREEN = False
-
-        self.display_images_calender()
+        if self.MODE == "CALENDAR":
+            self.display_images_calender()
+        else:
+            self.display_images_random()
+            
 
     def time_interrupt(self):
 
@@ -57,19 +63,20 @@ class PiPhotoStand:
             # get seconds
             self.get_current_timestamp()
             self.load_history_data()
-            current_time = datetime.now().second
-            print(f"Current time: {current_time}")
-
-            if current_time >= 55:
-                self.past_images.append(self.current_image)
-                self.current_image = None
-                self.day_change = True
-
-            # if self.last_year != self.current_year or self.last_month != self.current_month or self.last_date != self.current_date:
-#               self.past_images.append(self.current_image)
-                #self.current_image = None
-                #self.day_change = True
-            #     print("Day change detected!")
+            
+            if self.DEBUG:
+                current_time = datetime.now().second
+                print(f"Current time: {current_time}")
+                if current_time >= 55:
+                    self.past_images.append(self.current_image)
+                    self.current_image = None
+                    self.day_change = True
+            else:
+                if self.last_year != self.current_year or self.last_month != self.current_month or self.last_date != self.current_date:
+                    self.past_images.append(self.current_image)
+                    self.current_image = None
+                    self.day_change = True
+                    print("Day change detected!")
                 
             time.sleep(5)
 
@@ -130,7 +137,7 @@ class PiPhotoStand:
     def is_raspberry_pi_zero_2(self):
         try:
             # Check if the platform is 'armv6l' and if the model is 'Zero2W'
-            print(f"Current platform '{platform.machine()}'.")
+            #print(f"Current platform '{platform.machine()}'.")
             if platform.machine() == 'armv7l':
                 return True
             else:
@@ -275,6 +282,13 @@ class PiPhotoStand:
         # Pick a random file from the images folder
         image_files = [filename for filename in os.listdir(self.images_folder) if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
         available_images = [img for img in image_files if img not in self.past_images]
+
+        if self.FULLSCREEN:
+            cv2.namedWindow("my_window", cv2.WND_PROP_FULLSCREEN)          
+            cv2.setWindowProperty("my_window", cv2.WND_PROP_FULLSCREEN, 1)
+        else:
+            cv2.namedWindow('my_window', cv2.WINDOW_NORMAL)
+        
         while not self.exit_program:
             while available_images is not None and len(available_images) > 0 and not self.exit_program:
                 selected_image = random.choice(available_images)
@@ -284,13 +298,7 @@ class PiPhotoStand:
                 img = cv2.imread(image_path)
                 img = self.resize_image_for_display(img)
                 img = self.overlay_calendar(img)
-                if self.FULLSCREEN:
-                    #cv2.namedWindow('my_window', cv2.WINDOW_FULLSCREEN)
-                    cv2.namedWindow("my_window", cv2.WND_PROP_FULLSCREEN)          
-                    cv2.setWindowProperty("my_window", cv2.WND_PROP_FULLSCREEN, 1)
-                else:
-                    #cv2.namedWindow('my_window', cv2.WINDOW_NORMAL)
-                    cv2.namedWindow('my_window')
+
                 cv2.imshow("my_window", img)
                 cv2.waitKey(self.IMAGE_DISPLAY_TIME*1000)
                 self.past_images.append(selected_image)
@@ -326,6 +334,12 @@ class PiPhotoStand:
         # Pick a random file from the images folder
         image_files = [filename for filename in os.listdir(self.images_folder) if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
         available_images = [img for img in image_files if img not in self.past_images]
+        
+        if self.FULLSCREEN:
+            cv2.namedWindow("my_window", cv2.WND_PROP_FULLSCREEN)          
+            cv2.setWindowProperty("my_window", cv2.WND_PROP_FULLSCREEN, 1)
+        else:
+            cv2.namedWindow('my_window', cv2.WINDOW_NORMAL)
 
         while not self.exit_program:
             if len(available_images) == 0:
@@ -348,12 +362,7 @@ class PiPhotoStand:
                 img = self.resize_image_for_display(img)
                 img = self.adjust_brightness(img, 1.2)
                 img = self.overlay_calendar(img)
-                
-                if self.FULLSCREEN:
-                    cv2.namedWindow("my_window", cv2.WND_PROP_FULLSCREEN)          
-                    cv2.setWindowProperty("my_window", cv2.WND_PROP_FULLSCREEN, 1)
-                else:
-                    cv2.namedWindow('my_window', cv2.WINDOW_NORMAL)
+            
                 cv2.imshow("my_window", img)
                 cv2.waitKey(self.IMAGE_CALENDER_CYCLE_TIME*1000)
                 self.set_mouse_to_bottom_right()

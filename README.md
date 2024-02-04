@@ -39,7 +39,51 @@
     ```bash
     sudo mount -a
     ```
+## Bash Script
 
+1. **Change bash script**
+    Go into the git reposetory and execute in terminal:
+   ```
+   chmod +x autostart_pi_stand.sh
+    ```
+1. **Change the path in service file**
+    
+    Change the path in the service file to math the bash file.
+
+3. **Copy service**
+    Copy the autostar_pi_stand.service into:
+
+    ```
+    /etc/systemd/system/
+    ```
+2. **Reload systemd:**
+   After modifying the Bash script, reload the systemd manager to apply the changes:
+
+   ```bash
+   sudo systemctl daemon-reload
+   ```
+
+4. **Enable and start the service**
+    ```
+    sudo systemctl enable autostart_pi_stand
+    ```
+
+5. **Start the service**
+    ```
+    sudo systemctl start myservice
+    ```
+6. **Verify the status**
+    ```
+    sudo systemctl status myservice
+    ```
+7. **Stop the service**
+    ```
+    sudo systemctl stop myservice
+    ```
+8. **Disable the Service**
+    ```
+    sudo systemctl disable myservice
+    ```    
 ## Usage
 
 Access the TE NAS photo share in the `/home/niklas/TE_NAS_photo_share` directory. Interact with your photos stored on the NAS using this directory.
