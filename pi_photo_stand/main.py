@@ -113,7 +113,6 @@ class PiPhotoStand:
     def mouse_clb(self):
         while not self.exit_program:
             x, y = pyautogui.position()
-            print(x)
             if x < self.EXIT_PIXEL_RANGE and y < self.EXIT_PIXEL_RANGE:
                 print("Exiting the program.")
                 self.exit_program = True
