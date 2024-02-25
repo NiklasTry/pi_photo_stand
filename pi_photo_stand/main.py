@@ -49,7 +49,7 @@ class PiPhotoStand:
     WINDOW_HEIGHT = 480
     WINDOW_WIDTH = 800
     IMAGE_DISPLAY_TIME = 5  # seconds
-    IMAGE_CALENDER_CYCLE_TIME = 5  # seconds
+    IMAGE_CALENDER_CYCLE_TIME = 3  # seconds
     EXIT_PIXEL_RANGE = 100
     pyautogui.PAUSE = 1
     pyautogui.FAILSAFE = False
@@ -86,7 +86,6 @@ class PiPhotoStand:
         else:
             self.display_images_random()
             
-
     def time_interrupt(self):
         while not self.exit_program:
             # get seconds
@@ -153,6 +152,7 @@ class PiPhotoStand:
                 if not os.path.exists(destination_path):
                     shutil.copy2(source_path, destination_path)
                     print(f"Copied: {filename}")
+                    self.update_image_files()
                 else:
                     pass
                     #print(f"Skipped (already exists): {filename}")
@@ -271,7 +271,7 @@ class PiPhotoStand:
             # Mark the current date with a white circle
             if day == self.current_date:
                 center = (date_x + date_width // 2, date_y - date_height // 2)
-                radius = 14
+                radius = 17
                 cv2.circle(overlay, center, radius, (255, 255, 255), 2)  # White circle for the current date
 
             date_x += max_date_width + date_spacing
@@ -312,10 +312,16 @@ class PiPhotoStand:
 
         return img_resized
 
+    def update_image_files(self):
+        self.image_files = [filename for filename in os.listdir(self.images_folder) if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
+    
+    def update_avalable_images(self):
+        self.available_images = [img for img in self.image_files if img not in self.past_images]
+
     def display_images_random(self):
         # Pick a random file from the images folder
-        image_files = [filename for filename in os.listdir(self.images_folder) if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
-        available_images = [img for img in image_files if img not in self.past_images]
+        self.update_image_files()
+        self.update_avalable_images()
 
         if self.FULLSCREEN:
             cv2.namedWindow("my_window", cv2.WND_PROP_FULLSCREEN)          
@@ -324,8 +330,8 @@ class PiPhotoStand:
             cv2.namedWindow('my_window', cv2.WINDOW_NORMAL)
         
         while not self.exit_program:
-            while available_images is not None and len(available_images) > 0 and not self.exit_program:
-                selected_image = random.choice(available_images)
+            while self.available_images is not None and len(self.available_images) > 0 and not self.exit_program:
+                selected_image = random.choice(self.available_images)
                 
                 self.current_image = selected_image
                 image_path = os.path.join(self.images_folder, selected_image)
@@ -336,12 +342,12 @@ class PiPhotoStand:
                 cv2.imshow("my_window", img)
                 cv2.waitKey(self.IMAGE_DISPLAY_TIME*1000)
                 self.past_images.append(selected_image)
-                available_images = [img for img in image_files if img not in self.past_images]
+                self.update_avalable_images()
                 self.write_history_data()
 
             print("No more available images.")
             self.clear_history_data()
-            available_images = [img for img in image_files if img not in self.past_images]
+            self.update_avalable_images()
         cv2.destroyAllWindows()
         self.mouse_thread.join()
         self.time_thread.join()
@@ -349,8 +355,8 @@ class PiPhotoStand:
     def display_images_calender(self):
         selected_image = None
         # Pick a random file from the images folder
-        image_files = [filename for filename in os.listdir(self.images_folder) if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
-        available_images = [img for img in image_files if img not in self.past_images]
+        self.update_image_files()
+        self.update_avalable_images()
         
         if self.FULLSCREEN:
             cv2.namedWindow("my_window", cv2.WND_PROP_FULLSCREEN)          
@@ -359,15 +365,15 @@ class PiPhotoStand:
             cv2.namedWindow('my_window', cv2.WINDOW_NORMAL)
 
         while not self.exit_program:
-            if len(available_images) == 0:
+            if len(self.available_images) == 0:
                 print("No images available. Refreshing list!")
                 self.clear_history_data()
-                available_images = [img for img in image_files if img not in self.past_images]
+                self.update_avalable_images()
                 self.current_image = None
 
             while self.day_change is False and not self.exit_program:
                 if self.current_image is None:
-                    selected_image = random.choice(available_images)
+                    selected_image = random.choice(self.available_images)
                     self.current_image = selected_image
                     print("Selected new image: ", selected_image)
                 else:
@@ -383,7 +389,7 @@ class PiPhotoStand:
                 cv2.waitKey(self.IMAGE_CALENDER_CYCLE_TIME*1000)
                 self.set_mouse_to_bottom_right()
                 
-            available_images = [img for img in image_files if img not in self.past_images]
+            self.update_avalable_images()
             self.write_history_data()
             self.day_change = False
 
