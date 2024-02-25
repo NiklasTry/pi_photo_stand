@@ -58,7 +58,7 @@
     ```
     Go into the git directory
     ```
-    sudo cp autostart_pi_stand.service /etc/systemd/system/
+    sudo cp install_autostart/autostart_pi_stand.service /etc/systemd/system/
     ```
 2. **Reload systemd:**
    After modifying the Bash script, reload the systemd manager to apply the changes:
