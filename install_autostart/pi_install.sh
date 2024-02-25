@@ -25,6 +25,7 @@ pip3 install pyautogui
 sudo apt install cifs-utils -y
 
 # Check if /boot/config.txt exists
+# Add config for 5 inch display
 if [ -f /boot/config.txt ]; then
     # Append the line to /boot/config.txt
     echo "hdmi_group=2" | sudo tee -a /boot/config.txt > /dev/null
@@ -53,6 +54,10 @@ fi
 cd /home/admin/Programs/Pi_Photo_Stand/
 
 git clone https://github.com/NiklasTry/pi_photo_stand.git
+
+sudo cp install_autostart/autostart_pi_stand.service /etc/systemd/system/
+
+sudo systemctl daemon-reload
 
 sleep 10
 

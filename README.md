@@ -48,7 +48,7 @@
     ```
 1. **Change the path in service file**
     
-    Change the path in the service file to math the bash file.
+    Change the path in the service file to match the bash file.
 
 3. **Copy service**
     Copy the autostar_pi_stand.service into:
