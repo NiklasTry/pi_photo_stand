@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import os
-os.environ['DISPLAY'] = ':0'
+
 import cv2
 import shutil
 import numpy as np
@@ -27,8 +27,8 @@ class PiPhotoStand:
     EXIT_PIXEL_RANGE = 100
     pyautogui.PAUSE = 1
     pyautogui.FAILSAFE = False
-    MODE = "CALENDAR"  # "CALENDAR" or "RANDOM"
-    #MODE = "RANDOM"  # "CALENDAR" or "RANDOM"
+    #MODE = "CALENDAR"  # "CALENDAR" or "RANDOM"
+    MODE = "RANDOM"  # "CALENDAR" or "RANDOM"
     DEBUG = False
 
     def __init__(self, server_folder):

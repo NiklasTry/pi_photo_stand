@@ -59,6 +59,12 @@ sudo cp install_autostart/autostart_pi_stand.service /etc/systemd/system/
 
 sudo systemctl daemon-reload
 
+sudo systemctl enable autostart_pi_stand
+
+sudo systemctl start autostart_pi_stand
+
+sudo systemctl status autostart_pi_stand
+
 sleep 10
 
 

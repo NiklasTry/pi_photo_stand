@@ -1,6 +1,7 @@
 [Unit]
 Description=Auto Start Phone Stand
 After=network.target
+Requires=network-online.target
 
 [Service]
 Type=simple
