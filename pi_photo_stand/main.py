@@ -77,9 +77,12 @@ class PiPhotoStand:
             # get seconds
             self.get_current_timestamp()
             self.load_history_data()
-            self.init_folders()
+            print("YES1")
             mount_network_folders()
-            print("YES")
+            print("YES2")
+            self.init_folders()
+            print("YES3")
+            
             if self.DEBUG:
                 current_time = datetime.now().second
                 print(f"Current time: {current_time}")
