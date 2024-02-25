@@ -113,7 +113,7 @@ class PiPhotoStand:
     def mouse_clb(self):
         while not self.exit_program:
             x, y = pyautogui.position()
-            print(x, y)
+            print(x)
             if x < self.EXIT_PIXEL_RANGE and y < self.EXIT_PIXEL_RANGE:
                 print("Exiting the program.")
                 self.exit_program = True
@@ -344,6 +344,7 @@ class PiPhotoStand:
                 self.past_images.append(selected_image)
                 self.update_avalable_images()
                 self.write_history_data()
+                self.set_mouse_to_bottom_right()
 
             print("No more available images.")
             self.clear_history_data()
