@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import os
-os.environ['DISPLAY'] = ':0'
+import platform
 import cv2
 import shutil
 import numpy as np
@@ -10,10 +10,24 @@ import json
 import random
 import threading
 import time
-import platform
 import pyautogui
 import sys
 import subprocess
+
+def is_raspberry_pi_zero_2():
+        try:
+            # Check if the platform is 'armv6l' and if the model is 'Zero2W'
+            #print(f"Current platform '{platform.machine()}'.")
+            if platform.machine() == 'armv7l':
+                return True
+            else:
+                return False
+            #return platform.machine() == 'armv6l' and platform.system() == 'Linux' and 'Zero2W' in platform.uname().release
+        except Exception:
+            return False
+        
+if is_raspberry_pi_zero_2():
+    os.environ['DISPLAY'] = ':0'
 
 def simple_resize_image(img, target_width=800, max_height=480):
         img_resized = cv2.resize(img, (target_width, max_height))
@@ -22,9 +36,8 @@ def simple_resize_image(img, target_width=800, max_height=480):
 def mount_network_folders():
     try:
         # Execute the sudo mount -a command
-        subprocess.run(['sudo', 'mount', '-a'], check=True)
+        subprocess.run(['mount', '-a'], check=True)
         print("Mount command executed successfully.")
-        time.sleep(3)
     except subprocess.CalledProcessError as e:
         # Handle error if the command fails
         print(f"Error executing mount command: {e}")
@@ -59,8 +72,9 @@ class PiPhotoStand:
         self.time_thread = threading.Thread(target=self.time_interrupt, daemon=True)
         self.mouse_thread = threading.Thread(target=self.mouse_clb, daemon=True)
         self.mouse_thread.start()
+        self.time_thread.start()
         
-        if self.is_raspberry_pi_zero_2():
+        if is_raspberry_pi_zero_2():
             print("Running on PI. Entering fullscreen mode.")
             self.FULLSCREEN = True
         else:
@@ -72,16 +86,12 @@ class PiPhotoStand:
             
 
     def time_interrupt(self):
-
         while not self.exit_program:
             # get seconds
             self.get_current_timestamp()
             self.load_history_data()
-            print("YES1")
             mount_network_folders()
-            print("YES2")
             self.init_folders()
-            print("YES3")
             
             if self.DEBUG:
                 current_time = datetime.now().second
@@ -90,7 +100,7 @@ class PiPhotoStand:
                     self.past_images.append(self.current_image)
                     self.current_image = None
                     self.day_change = True
-            else:
+            elif self.MODE == "CALENDAR":
                 if self.last_year != self.current_year or self.last_month != self.current_month or self.last_date != self.current_date:
                     self.past_images.append(self.current_image)
                     self.current_image = None
@@ -116,7 +126,7 @@ class PiPhotoStand:
         self.copy_images(source_folder=server_folder, destination_folder=self.images_folder)
 
     def set_mouse_to_bottom_right(self):
-        if self.is_raspberry_pi_zero_2():
+        if is_raspberry_pi_zero_2():
             # Get the screen resolution
             screen_width, screen_height = pyautogui.size()
 
@@ -142,7 +152,8 @@ class PiPhotoStand:
                     shutil.copy2(source_path, destination_path)
                     print(f"Copied: {filename}")
                 else:
-                    print(f"Skipped (already exists): {filename}")
+                    pass
+                    #print(f"Skipped (already exists): {filename}")
 
     def list_files(self, folder_path):
         if not os.path.exists(folder_path):
@@ -152,18 +163,6 @@ class PiPhotoStand:
         files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
         print(f"Files in {folder_path}: ", files)
         return files
-
-    def is_raspberry_pi_zero_2(self):
-        try:
-            # Check if the platform is 'armv6l' and if the model is 'Zero2W'
-            #print(f"Current platform '{platform.machine()}'.")
-            if platform.machine() == 'armv7l':
-                return True
-            else:
-                return False
-            #return platform.machine() == 'armv6l' and platform.system() == 'Linux' and 'Zero2W' in platform.uname().release
-        except Exception:
-            return False
     
     def get_current_timestamp(self):
         self.current_date = datetime.now().day
@@ -343,9 +342,9 @@ class PiPhotoStand:
             available_images = [img for img in image_files if img not in self.past_images]
         cv2.destroyAllWindows()
         self.mouse_thread.join()
+        self.time_thread.join()
 
     def display_images_calender(self):
-        self.time_thread.start()
         selected_image = None
         # Pick a random file from the images folder
         image_files = [filename for filename in os.listdir(self.images_folder) if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
