@@ -10,7 +10,6 @@ import json
 import random
 import threading
 import time
-import pyautogui
 import sys
 import subprocess
 
@@ -28,6 +27,9 @@ def is_raspberry_pi_zero_2():
         
 if is_raspberry_pi_zero_2():
     os.environ['DISPLAY'] = ':0'
+
+import pyautogui
+
 
 def simple_resize_image(img, target_width=800, max_height=480):
         img_resized = cv2.resize(img, (target_width, max_height))
@@ -91,7 +93,7 @@ class PiPhotoStand:
             self.get_current_timestamp()
             self.load_history_data()
             mount_network_folders()
-            self.init_folders()
+            self.copy_images(source_folder=server_folder, destination_folder=self.images_folder)
             
             if self.DEBUG:
                 current_time = datetime.now().second
