@@ -48,7 +48,6 @@ class PiPhotoStand:
         self.server_folder = server_folder
         images_folder = f"{os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))}/MY_IMAGES"
         self.images_folder = images_folder
-        mount_network_folders()
         self.init_folders()
 
         self.history_data = {}
@@ -78,6 +77,8 @@ class PiPhotoStand:
             # get seconds
             self.get_current_timestamp()
             self.load_history_data()
+            self.init_folders()
+            mount_network_folders()
             
             if self.DEBUG:
                 current_time = datetime.now().second
