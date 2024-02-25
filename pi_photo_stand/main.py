@@ -113,6 +113,7 @@ class PiPhotoStand:
     def mouse_clb(self):
         while not self.exit_program:
             x, y = pyautogui.position()
+            print(x, y)
             if x < self.EXIT_PIXEL_RANGE and y < self.EXIT_PIXEL_RANGE:
                 print("Exiting the program.")
                 self.exit_program = True
@@ -122,7 +123,6 @@ class PiPhotoStand:
         if not os.path.exists(self.images_folder):
             os.makedirs(self.images_folder)
 
-        self.list_files(self.server_folder)
         self.list_files(self.images_folder)
         self.copy_images(source_folder=server_folder, destination_folder=self.images_folder)
 
