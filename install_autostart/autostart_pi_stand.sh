@@ -11,7 +11,7 @@ if [ $? -eq 0 ]; then
     cd /home/admin/Programs/Pi_Photo_Stand/pi_photo_stand/pi_photo_stand
 
     # Run your Python script
-    python3 main.py  # Replace 'your_script.py' with the actual name of your Python script
+    DISPLAY=:0 python3 main.py  # Replace 'your_script.py' with the actual name of your Python script
     sleep 10
 else
     echo "Mount failed. Exiting script."
