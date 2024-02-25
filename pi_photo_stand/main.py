@@ -79,7 +79,7 @@ class PiPhotoStand:
             self.load_history_data()
             self.init_folders()
             mount_network_folders()
-            
+            print("YES")
             if self.DEBUG:
                 current_time = datetime.now().second
                 print(f"Current time: {current_time}")
