@@ -26,6 +26,7 @@ def is_raspberry_pi_zero_2():
             return False
         
 if is_raspberry_pi_zero_2():
+    time.sleep(2)
     os.environ['DISPLAY'] = ':0'
 
 import pyautogui
