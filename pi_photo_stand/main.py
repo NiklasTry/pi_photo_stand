@@ -13,10 +13,21 @@ import time
 import platform
 import pyautogui
 import sys
+import subprocess
 
 def simple_resize_image(img, target_width=800, max_height=480):
         img_resized = cv2.resize(img, (target_width, max_height))
         return img_resized
+
+def mount_network_folders():
+    try:
+        # Execute the sudo mount -a command
+        subprocess.run(['sudo', 'mount', '-a'], check=True)
+        print("Mount command executed successfully.")
+        time.sleep(3)
+    except subprocess.CalledProcessError as e:
+        # Handle error if the command fails
+        print(f"Error executing mount command: {e}")
 
 class PiPhotoStand:
     
@@ -37,6 +48,7 @@ class PiPhotoStand:
         self.server_folder = server_folder
         images_folder = f"{os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))}/MY_IMAGES"
         self.images_folder = images_folder
+        mount_network_folders()
         self.init_folders()
 
         self.history_data = {}
