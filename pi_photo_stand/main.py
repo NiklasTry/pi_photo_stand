@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import os
-
+os.environ['DISPLAY'] = ':0'
 import cv2
 import shutil
 import numpy as np
