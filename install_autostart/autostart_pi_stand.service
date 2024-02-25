@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 User=admin
-ExecStart=DISPLAY=:0 /usr/bin/env python3 /home/admin/Programs/Pi_Photo_Stand/pi_photo_stand/pi_photo_stand/main.py 
+ExecStart=/usr/bin/env python3 /home/admin/Programs/Pi_Photo_Stand/pi_photo_stand/pi_photo_stand/main.py 
 
 [Install]
 WantedBy=default.target
